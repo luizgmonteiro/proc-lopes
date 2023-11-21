@@ -1,23 +1,21 @@
 # Processo Seletivo - Lopes Labs<br/>
 
-## Perguntas<br/>
+## Perguntas
 ***1. Como foi a definição da sua estratégia de modelagem?***<br/>
 R: Na análise inicial foi possível obter informações importantes sobre os dados:
 * A variável de interesse é discreta. *quality* possui valores de 3 a 9. Dado isso, a escolha por uma regressão logística  multivariável ao invés de uma regressão linear multivariável se deu por questões de métrica de avaliação. Avaliar um output contínuo contra uma variável discreta torna a avaliação do modelo errônea, além de dificultar consideravelmente a otimização de hiperparâmetros do modelo. Poderia sim arredondar o output do modelo para metrificar, mas desse modo perderia uma parte preciosa da avaliação da curva ideal e de predição do modelo.
-* A distribuição da variável de interesse é muito próxima de uma normal: sendo desbalanceada a escolha da métrica de avaliação no aprendizado não poderia ser geral.<br/>
+* A distribuição da variável de interesse é muito próxima de uma normal: sendo desbalanceada a escolha da métrica de avaliação no aprendizado não poderia ser geral.
 
 ***2. Como foi definida a função de custo utilizada?***<br/>
-R: A função de custo foi decidida como a função de custo de regressão logística multivariável, onde y pode assumir valores contínuos entre 0 e 1, identificando a probabilidade de determinado outcome ser positivo. Essa função é definida pelo próprio XGBoost e segue a paremetrização da função objetivo de regressão logística em tree gradient boost, onde a função objetivo é:<br/>
-<br/>
-<img src="https://render.githubusercontent.com/render/math?math=\sum_{i=1}^n [g_i f_t(x_i) + \frac{1}{2} h_i f_t^2(x_i)] + \Omega(f_t)">
-<br/>
-<br/>
+R: A função de custo foi decidida como a função de custo de regressão logística multivariável, onde y pode assumir valores contínuos entre 0 e 1, identificando a probabilidade de determinado outcome ser positivo. Essa função é definida pelo próprio XGBoost e segue a paremetrização da função objetivo de regressão logística em tree gradient boost, onde a função objetivo é:
+```math
+\sum_{i=1}^n [g_i f_t(x_i) + \frac{1}{2} h_i f_t^2(x_i)] + \Omega(f_t)
+```
 E a função de custo da regressão logística:
-<br/>
-<br/>
-<img src="https://render.githubusercontent.com/render/math?math=J(\theta) = - \dfrac{1}{m} [\sum_{i=1}^{m} y^{(i)} \log(h_\theta(x^{(i)})) + (1 - y^{(i)}) \log(1-h_\theta(x^{(i)}))]"> 
-<br/>
-<br/>
+```math
+J(\theta) = -\frac{1}{m} \sum_{i=1}^{m} [y^{(i)} \log(h_\theta(x^{(i)})) + (1 - y^{(i)}) \log(1 - h_\theta(x^{(i)}))]
+```
+
 ***3. Qual foi o critério utilizado na seleção do modelo final?***<br/>
 R: O modelo considerado final foi baseado em alguns aprendizados que obtive durante a análise sobre os dados, somada à anlásie das métricas. Na análise é possível verificar que foram identificados diferentes grupos com diferentes características na avaliação e por isso optei pelo ensemble de vários modelos no final. Os modelos com XGBoost foram brevemente comparados com um MLP. É comum no meu dia a dia no trabalho comparar várias implementações de modelos de forma a buscar aquele que mais se adequa a determinado problema. As comparações são feitas por exemplo entre XGBoost, LGBM, SVC, etc. No caso dessa análise a comparação foi mais demonstrativa do que de fato prática em relação ao MLP. O maior critério utilizado foi a performance medida em acurácia.<br/>
 
